@@ -3,6 +3,12 @@ POS tags from en.wiktionary
 
 This is a set of small tools I created to extract part of speech tags from an XML dump of en.wiktionary and run simple NLP tasks on this data.
 
+The operations are three:
+
+* Converting an XML dump of Wikipedia (usign wiki markup) in plain text
+* Extracting a POS dictionary for Italian from an en.wiktionary dump
+* Tagging a plain text file using the POS dictionary (no Machine Learning, just pure string matching)
+
 After downloading and expanding the XML dump of en.wiktionary, run generation.POSListGenerator on it (the command with no arguments will show an help).
 
 It will produce a TSV file listing the terms and a list of possible part of speech separated by commas.
