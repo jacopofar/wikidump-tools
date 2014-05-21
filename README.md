@@ -17,7 +17,7 @@ A list generated from the dump of may 2014 is directly available in this reposit
 
 Using `tagging.POSTagProcessedWikiText` the POS dictionary can be used to tag a text file. It will be split in terms usign spaces and punctuation and each term will be tagged (when many tags are available, they will be listed separated by comma, when the term is unknown will be marked as UNKNOWN).
 
-The tagger *recognize terms with multiple words*, like "buona sera", when present in the dictionary (there were more than 10000 of them in 2013), in order to match the longest sequence available.
+The tagger recognizes terms with multiple words, like "buona sera", when present in the dictionary (there were more than 10000 of them in 2013), in order to match the longest sequence available.
 
 These tools are made for *Italian language*, but should be easy to adapt to other European Languages (more difficult for Chinese or Japanese due to lack of spaces between words, would need a tokener which is not included).
 
