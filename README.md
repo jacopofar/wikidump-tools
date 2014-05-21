@@ -13,7 +13,7 @@ After downloading and expanding the XML dump of en.wiktionary, run generation.PO
 
 It will produce a TSV file listing the terms and a list of possible part of speech separated by commas.
 
-You can see a list generated from the dump of march 2013.
+A list generated from the dump of may 2014 is directly available in this repository.
 
 
 Using tagging.POSTagProcessedWikiText the POS dictionary can be used to tag a text file. It will be split in terms usign spaces and punctuation and each term will be tagged (when many tags are available, they will be listed separated by comma, when the term is unknown will be marked as UNKNOWN).
