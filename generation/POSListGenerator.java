@@ -1,5 +1,6 @@
 package generation;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -10,11 +11,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.Reader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.xml.sax.SAXException;
 
 public class POSListGenerator {
@@ -33,9 +37,9 @@ public class POSListGenerator {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		if(args.length!=3 && args.length!=4){
+		if(args.length!=2){
 			System.err.println("Wrong usage, need 2 arguments:");
-			System.err.println("The path of the XML dump of en.wiktionary");
+			System.err.println("The path of the XML dump (compressed or not) of en.wiktionary");
 			System.err.println("The path of the POS dictionary to be generated");
 			System.exit(1);
 		}
@@ -54,8 +58,16 @@ public class POSListGenerator {
 		
 		//open the en.wiktionary dump and read it line per line
 		FileInputStream fstream = new FileInputStream(args[0]);
-		DataInputStream in = new DataInputStream(fstream);
-		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		BufferedInputStream in = new BufferedInputStream(fstream);
+		Reader input;
+		try {
+			input = new InputStreamReader(new CompressorStreamFactory().createCompressorInputStream(in),"UTF-8");
+		} catch (CompressorException e1) {
+			System.err.println("Compression error, falling back to plain-text reading");
+			e1.printStackTrace();
+			input=new InputStreamReader(in);
+		}
+		BufferedReader br = new BufferedReader(input);
 		
 		while ((strLine = br.readLine()) != null){
 			
