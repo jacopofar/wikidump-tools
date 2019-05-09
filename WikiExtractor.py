@@ -603,8 +603,6 @@ def main():
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
 
-    #output_splitter = OutputSplitter(compress, file_size, output_dir)
-    #modificato per usare il primo argomento anziché stdin come era in origine
     process_data(open(sys.argv[1],'r'), open(sys.argv[2],'w'))
     output_splitter.close()
     
