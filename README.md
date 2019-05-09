@@ -21,4 +21,4 @@ The tagger recognizes terms with multiple words, like "buona sera", when present
 
 These tools are made for *Italian language*, but should be easy to adapt to other European Languages (more difficult for Chinese or Japanese due to lack of spaces between words, would need a tokener which is not included).
 
-To obtain a text representation from a Wikipedia dump (which uses wiki markup), suitable for the tagger, the repository contains a Python3 script, WikiExtractor.py (usage `python3 Wikiextractor.py wiki-articles-dump.xml output-file.txt`), originally developed by Pisa University ([here](http://medialab.di.unipi.it/wiki/Wikipedia_Extractor)).
+To obtain a text representation from a Wikipedia dump (which uses wiki markup), suitable for the tagger, the repository contains a Python3 script, WikiExtractor.py (usage `python3 Wikiextractor.py wiki-articles-dump.xml.bz2 output-file.txt`, you can also pass the uncompressed XML file), originally developed by Pisa University ([here](http://medialab.di.unipi.it/wiki/Wikipedia_Extractor)).
