@@ -2,8 +2,11 @@
 # -*- coding: utf-8 -*-
 # This program was originally created by University of Pisa as part of Tanl project, this is my Python3 port.
 # The original code and documentation is here: http://medialab.di.unipi.it/wiki/Wikipedia_Extractor
-# I removed the support for output splitting, some pieces of code are still inside it.
-#
+# I removed the support for output splitting.
+# Usage:
+#           python3 WikiExtractor.py wikipedia-dump.bz2 output.txt
+# It also accepts the uncompressed dump.
+# It outputs the plain text, ignoring header titles and short lines in general.
 # Here the original license.
 #
 # =============================================================================
@@ -88,7 +91,7 @@ discardElements = set([
 #=========================================================================
 #
 # MediaWiki Markup Grammar
- 
+
 # Template = "{{" [ "msg:" | "msgnw:" ] PageName { "|" [ ParameterName "=" AnyText | AnyText ] } "}}" ;
 # Extension = "<" ? extension ? ">" AnyText "</" ? extension ? ">" ;
 # NoWiki = "<nowiki />" | "<nowiki>" ( InlineText | BlockText ) "</nowiki>" ;
@@ -97,7 +100,7 @@ discardElements = set([
 #
 # ParameterName = ? uppercase, lowercase, numbers, no spaces, some special chars ? ;
 #
-#=========================================================================== 
+#===========================================================================
 
 # Program version
 version = '2.3'
@@ -106,17 +109,11 @@ version = '2.3'
 ##### Main function ###########################################################
 
 def WikiDocument(out, id, title, text):
-    header = '<doc id="%s" title="%s">\n' % (id, title)
-    # Separate header from text with a newline.
-    header += title + '\n'
-    header = header
     text = clean(text)
-    footer = "\n</doc>"
-    out.write(header)
     for line in compact(text):
-        out.write(line)
-        out.write('\n')
-    out.write("\n</doc>")
+        if len(line) > 15:
+            out.write(line)
+            out.write('\n')
 # This version tries to guess the URL from the title
 # def guess_url(title, prefix):
 #     title = urllib.quote(title.replace(' ', '_').encode('utf-8'))
@@ -490,51 +487,6 @@ def handle_unicode(entity):
     if numeric_code >= 0x10000: return ''
     return unichr(numeric_code)
 
-#------------------------------------------------------------------------------
-
-class OutputSplitter:
-    def __init__(self, compress, max_file_size, path_name):
-        self.dir_index = 0
-        self.file_index = -1
-        self.compress = compress
-        self.max_file_size = max_file_size
-        self.path_name = path_name
-        self.out_file = self.open_next_file()
-
-    def reserve(self, size):
-        cur_file_size = self.out_file.tell()
-        if cur_file_size + size > self.max_file_size:
-            self.close()
-            self.out_file = self.open_next_file()
-
-    def write(self, text):
-        self.out_file.write(text)
-
-    def close(self):
-        self.out_file.close()
-
-    def open_next_file(self):
-        self.file_index += 1
-        if self.file_index == 100:
-            self.dir_index += 1
-            self.file_index = 0
-        dir_name = self.dir_name()
-        if not os.path.isdir(dir_name):
-            os.makedirs(dir_name)
-        file_name = os.path.join(dir_name, self.file_name())
-        if self.compress:
-            return bz2.BZ2File(file_name + '.bz2', 'w')
-        else:
-            return open(file_name, 'w')
-
-    def dir_name(self):
-        char1 = self.dir_index % 26
-        char2 = self.dir_index / 26 % 26
-        return os.path.join(self.path_name, '%c%c' % (ord('A') + char2, ord('A') + char1))
-
-    def file_name(self):
-        return 'wiki_%02d' % self.file_index
-
 ### READER ###################################################################
 
 tagRE = re.compile(r'(.*?)<(/?\w+)[^>]*>(?:([^<]*)(<.*>)?)?')
@@ -544,7 +496,8 @@ def process_data(input, output):
     id = None
     inText = False
     redirect = False
-    for line in input:
+    for line_raw in input:
+        line = line_raw.decode('utf-8')
         tag = ''
         if '<' in line:
             m = tagRE.search(line)
@@ -581,17 +534,6 @@ def process_data(input, output):
             id = None
             page = []
 
-### CL INTERFACE ############################################################
-
-def show_help():
-    print(__doc__)
-
-def show_usage(script_name):
-    print('Usage: %s [options]' % script_name,file=sys.stderr)
-
-##
-# Minimum size of output files
-minFileSize = 200 * 1024
 
 def main():
     global keepLinks, keepSections, prefix, acceptedNamespaces
@@ -602,9 +544,12 @@ def main():
 
     if not os.path.isdir(output_dir):
         os.makedirs(output_dir)
+    if sys.argv[1].endswith('.bz2'):
+        input_file = bz2.BZ2File(sys.argv[1])
+    else:
+        input_file = open(sys.argv[1],'r')
 
-    process_data(open(sys.argv[1],'r'), open(sys.argv[2],'w'))
-    output_splitter.close()
-    
+    process_data(input_file, open(sys.argv[2],'w'))
+
 if __name__ == '__main__':
     main()
