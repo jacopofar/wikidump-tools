@@ -1,3 +1,5 @@
+__ARCHIVED:__ this project should still works but it's much easier to use [Wiktextract](https://github.com/tatuylonen/wiktextract), it works across multiple languages and it provides up-to-date extracts
+
 POS tags from en.wiktionary
 ===========================
 
